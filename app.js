@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const notesRouter = require('./routes/notes')
 const blogRouter = require('./routes/blogs')
 const userRouter = require('./routes/users')
@@ -7,6 +8,7 @@ const middleware = require('./utils/middleware')
 const app = express()
 
 app.use(express.json()) // parses incoming JSON request bodies
+app.use(cors())
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
 app.use(middleware.userExtractor)
