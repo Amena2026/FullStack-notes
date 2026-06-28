@@ -1,17 +1,18 @@
-import axios from "axios"
 import { useState, useEffect } from "react"
 import Note from "./components/Note"
 import Form from "./components/Form"
 import LoginForm from "./components/LoginForm"
 import noteService from './services/notes'
 import loginService from './services/login'
+import NoteForm from "./components/NoteForm"
+import Togglable from "./components/Togglable"
 
 const App = () => {
   
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState([' '])
-  const [username, setUsername] = useState([' '])
-  const [password, setPassword] = useState([' '])
+  // const [newNote, setNewNote] = useState('')
+  const [username, setUsername] = useState(' ')
+  const [password, setPassword] = useState(' ')
   const [user, setUser] = useState(null)
 
 
@@ -58,7 +59,7 @@ const App = () => {
     window.localStorage.removeItem('loggedNoteappUser')
     setUser(null)
   }
-
+  /*
   const addNote = event => {
     event.preventDefault()
 
@@ -74,6 +75,14 @@ const App = () => {
       setNewNote('')
      })
 
+  } */
+
+  const addNote = (noteObject) => {
+    noteService
+      .create(noteObject)
+      .then(returnedNote => {
+        setNotes(notes.concat(returnedNote))
+      })
   }
 
   const handleDelete = id => {
@@ -115,7 +124,7 @@ const App = () => {
       handlePasswordChange={handlePasswordChange} 
     />
   )
-
+  /*
   const showNoteForm = () => (
     <div>
       <button onClick={handleLogout}>logout</button>
@@ -127,10 +136,25 @@ const App = () => {
       />
     </div>
   )
+  */
+  
+  const showNoteForm = () => (
+    <Togglable buttonLabel= 'new note'>
+      <NoteForm createNote={addNote}/>
+    </Togglable>
+  )
+
 
   return (
     <div>
-      {user === null ? showLoginForm() : showNoteForm()}
+      {!user && showLoginForm()}
+      {user && (
+        <div>
+          <p>{user.name} logged in</p>
+          <button onClick={handleLogout}>logout</button>
+          {showNoteForm()}
+        </div>
+      )}
       <ul>
         {notes.map(
           note => <Note key={note.id} content={note.content} deleteNote={() => handleDelete(note.id)}/>
