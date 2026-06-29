@@ -10,9 +10,6 @@ import Togglable from "./components/Togglable"
 const App = () => {
   
   const [notes, setNotes] = useState([])
-  // const [newNote, setNewNote] = useState('')
-  const [username, setUsername] = useState(' ')
-  const [password, setPassword] = useState(' ')
   const [user, setUser] = useState(null)
 
 
@@ -37,19 +34,16 @@ const App = () => {
     }
   }, []) 
 
-  const userLogin = async event => {
-    event.preventDefault()
+  const userLogin = async (credentials) => {
     try {
-      const user = await loginService.login({username, password})
-      
+      const user = await loginService.login(credentials)
+
       window.localStorage.setItem(
         'loggedNoteappUser', JSON.stringify(user)
-      ) 
+      )
 
       noteService.setToken(user.token)
       setUser(user)
-      setUsername('')
-      setPassword('')
     } catch {
       console.log('invalid credentials')
     }
@@ -59,23 +53,6 @@ const App = () => {
     window.localStorage.removeItem('loggedNoteappUser')
     setUser(null)
   }
-  /*
-  const addNote = event => {
-    event.preventDefault()
-
-    const noteObject = {
-      content: newNote,
-      important: Math.random() < 0.5
-    }
-
-    noteService
-     .create(noteObject)
-     .then(response => {
-      setNotes(notes.concat(response))
-      setNewNote('')
-     })
-
-  } */
 
   const addNote = (noteObject) => {
     noteService
@@ -103,40 +80,11 @@ const App = () => {
     
   }
 
-  const handleNoteChange = () => {
-    setNewNote(event.target.value)
-  }
-
-  const handleUsernameChange = () => {
-    setUsername(event.target.value)
-  }
-
-  const handlePasswordChange = () => {
-    setPassword(event.target.value)
-  }
-
   const showLoginForm = () => (
-    <LoginForm
-      userLogin={userLogin}
-      username={username}
-      handleUsernameChange={handleUsernameChange}
-      password={password}
-      handlePasswordChange={handlePasswordChange} 
-    />
+    <Togglable buttonLabel= 'log in'>
+      <LoginForm userLogin={userLogin}/>
+    </Togglable>
   )
-  /*
-  const showNoteForm = () => (
-    <div>
-      <button onClick={handleLogout}>logout</button>
-      <p>welcome {user.name}</p>
-      <Form
-      addNote={addNote}
-      newNote={newNote}
-      handleNoteChange={handleNoteChange} 
-      />
-    </div>
-  )
-  */
   
   const showNoteForm = () => (
     <Togglable buttonLabel= 'new note'>
@@ -144,6 +92,15 @@ const App = () => {
     </Togglable>
   )
 
+  /*
+
+      next steps ***
+      yesterday we moved the state responsible for creating new notes down from the app component to the NoteForm component
+      we want to do the same thing with the login Form
+
+
+
+  */
 
   return (
     <div>
