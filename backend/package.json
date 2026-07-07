@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "node --test"
+    "test": "node --test",
+    "start:test": "node --watch index.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
