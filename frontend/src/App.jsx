@@ -6,11 +6,14 @@ import noteService from './services/notes'
 import loginService from './services/login'
 import NoteForm from "./components/NoteForm"
 import Togglable from "./components/Togglable"
+import Notification from "./components/Notification"
 
 const App = () => {
   
   const [notes, setNotes] = useState([])
   const [user, setUser] = useState(null)
+  const [messageError, setMessageError] = useState(null)
+  const [messageSuccess, setMessageSuccess] = useState(null)
 
   const noteFormRef = useRef()
 
@@ -46,8 +49,17 @@ const App = () => {
 
       noteService.setToken(user.token)
       setUser(user)
+      setMessageSuccess(`${user.name} successfully logged in`)
+      setTimeout(() => {
+        setMessageSuccess(null)
+      }, 5000)
+
     } catch {
       console.log('invalid credentials')
+      setMessageError('invalid username & password')
+      setTimeout(() => {
+        setMessageError(null)
+      }, 5000)
     }
   }
 
@@ -63,6 +75,11 @@ const App = () => {
       .then(returnedNote => {
         setNotes(notes.concat(returnedNote))
       })
+    
+    setMessageSuccess('successfully created new note')
+    setTimeout(() => {
+      setMessageSuccess(null)
+    }, 5000)
   }
 
   const handleDelete = id => {
@@ -75,11 +92,16 @@ const App = () => {
     console.log("note:", note)
 
 
-     noteService
-      .remove(id)
+    noteService
+     .remove(id)
       .then(() => {
         setNotes(notes.filter(n => n.id !== id))
-      })
+    })
+
+    setMessageSuccess('successfully deleted note')
+    setTimeout(() => {
+      setMessageSuccess(null)
+    }, 5000)
     
   }
 
@@ -95,18 +117,10 @@ const App = () => {
     </Togglable>
   )
 
-  /*
-
-      next steps ***
-      yesterday we moved the state responsible for creating new notes down from the app component to the NoteForm component
-      we want to do the same thing with the login Form
-
-
-
-  */
-
   return (
     <div>
+      <Notification message={messageError} style="error"/>
+      <Notification message={messageSuccess} style="success" />
       {!user && showLoginForm()}
       {user && (
         <div>
