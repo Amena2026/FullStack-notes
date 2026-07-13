@@ -32,12 +32,16 @@ describe('Note app', () => {
 
         await page.getByRole('button', {name: 'login'}).click()
     
-        await expect(page.getByText('Login')).toBeVisible()
+        await expect(page.getByText('invalid username & password')).toBeVisible()
         
     })
 
 
     describe('when logged in', () => {
+        // generates a fresh unique string so a test's note can never collide with
+        // notes left behind by other runs or by other tests in this same file
+        const uniqueNoteContent = () => `notes can be created through playwright testing ${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+
         beforeEach(async ({page}) => {
             await page.getByRole('button', {name: 'log in'}).click()
             await page.getByLabel('username').fill('root')
@@ -47,18 +51,27 @@ describe('Note app', () => {
         })
 
         test('a new note can be created', async ({page}) => {
+            const noteContent = uniqueNoteContent()
+
             await page.getByRole('button', {name: 'new note'}).click()
-            await page.getByLabel('new note').fill('notes can be created through playwright testing')
+            await page.getByLabel('new note').fill(noteContent)
             await page.getByRole('button', {name: 'save'}).click()
-            await expect(page.getByText('notes can be created through playwrite testing')).toBeVisible()
+            await expect(page.getByText(noteContent)).toBeVisible()
 
         })
 
         test('a note can be deleted', async ({page}) => {
-            const note = page.locator('li.note').filter({ hasText: 'notes can be created through playwrite testing'})
+            const noteContent = uniqueNoteContent()
+
+            await page.getByRole('button', {name: 'new note'}).click()
+            await page.getByLabel('new note').fill(noteContent)
+            await page.getByRole('button', {name: 'save'}).click()
+            await expect(page.getByText(noteContent)).toBeVisible()
+
+            const note = page.locator('li.note').filter({ hasText: noteContent })
             await note.getByRole('button', { name: 'delete' }).click()
 
-            await expect(page.getByText('notes can be created through playwrite testing')).not.toBeVisible()
+            await expect(page.getByText(noteContent)).not.toBeVisible()
         })
     })
 })
