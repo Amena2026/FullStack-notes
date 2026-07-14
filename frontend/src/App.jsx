@@ -1,12 +1,19 @@
 import { useState, useEffect, useRef } from "react"
-import Note from "./components/Note"
-import Form from "./components/Form"
-import LoginForm from "./components/LoginForm"
 import noteService from './services/notes'
 import loginService from './services/login'
+
+import {
+  BrowserRouter as Router,
+  Routes, Route, Navigate, Link
+} from 'react-router-dom'
+
+import Note from "./components/Note"
+import LoginForm from "./components/LoginForm"
 import NoteForm from "./components/NoteForm"
 import Togglable from "./components/Togglable"
 import Notification from "./components/Notification"
+
+import Home from "./pages/Home"
 
 const App = () => {
   
@@ -69,7 +76,6 @@ const App = () => {
   }
 
   const addNote = (noteObject) => {
-    noteFormRef.current.toggleVisibility()
     noteService
       .create(noteObject)
       .then(returnedNote => {
@@ -105,36 +111,50 @@ const App = () => {
     
   }
 
-  const showLoginForm = () => (
-    <Togglable buttonLabel= 'log in'>
-      <LoginForm userLogin={userLogin}/>
-    </Togglable>
-  )
-  
-  const showNoteForm = () => (
-    <Togglable buttonLabel= 'new note' ref={noteFormRef}>
-      <NoteForm createNote={addNote}/>
-    </Togglable>
-  )
+  const padding = {
+    padding: 5
+  }
 
   return (
-    <div>
+    <Router>
+      <h1>Welcome to Notes app</h1>
       <Notification message={messageError} style="error"/>
       <Notification message={messageSuccess} style="success" />
-      {!user && showLoginForm()}
-      {user && (
-        <div>
-          <p>{user.name} logged in</p>
-          <button onClick={handleLogout}>logout</button>
-          {showNoteForm()}
-        </div>
-      )}
+      <div>
+        <Link style={padding} to="/">home</Link>
+        {!user && (
+          <Link style={padding} to="/login">login</Link>
+        )}
+        {user && (
+          <div>
+            <Link style={padding} to="create">new note</Link>
+            <button onClick={handleLogout}>logout</button>
+          </div>
+          
+        )}
+      </div>
+      <Routes>
+        <Route path="/" element={<Home />}/>
+        <Route path="/login" element={
+          user === null ? 
+            <LoginForm userLogin={userLogin}/>
+          :
+            <Navigate to="/" replace/>
+        } />
+        <Route path="create" element={
+          user === null ?
+            <Navigate to="/" replace/>
+          :
+           <NoteForm createNote={addNote}/> 
+        } />
+      </Routes>
+
       <ul>
         {notes.map(
           note => <Note key={note.id} content={note.content} deleteNote={() => handleDelete(note.id)}/>
         )}
       </ul>
-    </div>
+    </Router>
   )
 }
 
