@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { TextField, Button } from "@mui/material"
 
 const NoteForm = ({ createNote }) => {
   const [newNote, setNewNote] = useState('')
@@ -18,14 +19,12 @@ const NoteForm = ({ createNote }) => {
       <h2>Create a new note</h2>
 
       <form onSubmit={addNote}>
-        <label>
-          new note
-          <input
+          <TextField
+            label="new note"
             value={newNote}
-            onChange={event => setNewNote(event.target.value)}
+            onChange={event => setNewNote(event.target.value)} 
           />
-        </label>
-        <button type="submit">save</button>
+        <Button type="submit" variant="contained" style={{ marginTop: 10 }}>save</Button>
       </form>
     </div>
   )

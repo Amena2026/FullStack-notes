@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { TextField, Button } from "@mui/material"
 
 const LoginForm = ({userLogin}) => {
     // we are moving the state responsible for changing the form (ie username & password) from app to LoginForm
@@ -19,23 +20,17 @@ const LoginForm = ({userLogin}) => {
         <div>
             <form onSubmit={login}>
                 <h2>Login</h2>
-                <label>
-                    username
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={event => setUsername(event.target.value)} 
-                    />
-                </label>
-                <label>
-                    password
-                    <input
-                      type="text"
-                      value={password}
-                      onChange={event => setPassword(event.target.value)} 
-                    />
-                </label>
-                <button type="submit">login</button>
+                <TextField
+                  label="username"
+                  value={username}
+                  onChange={event => setUsername(event.target.value)} 
+                />
+                <TextField
+                  label="password"
+                  value={password}
+                  onChange={event => setPassword(event.target.value)}
+                />
+                <Button type="submit" variant="contained" style={{ marginTop: 10 }}>save</Button>
             </form>
         </div>
     )

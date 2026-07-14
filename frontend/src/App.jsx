@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react"
 import noteService from './services/notes'
 import loginService from './services/login'
 
+import { Container, AppBar, Toolbar, Button } from '@mui/material'
+
 import {
   BrowserRouter as Router,
   Routes, Route, Navigate, Link
@@ -116,45 +118,47 @@ const App = () => {
   }
 
   return (
-    <Router>
-      <h1>Welcome to Notes app</h1>
-      <Notification message={messageError} style="error"/>
-      <Notification message={messageSuccess} style="success" />
-      <div>
-        <Link style={padding} to="/">home</Link>
-        {!user && (
-          <Link style={padding} to="/login">login</Link>
-        )}
-        {user && (
-          <div>
-            <Link style={padding} to="create">new note</Link>
-            <button onClick={handleLogout}>logout</button>
-          </div>
-          
-        )}
-      </div>
-      <Routes>
-        <Route path="/" element={<Home />}/>
-        <Route path="/login" element={
-          user === null ? 
-            <LoginForm userLogin={userLogin}/>
-          :
-            <Navigate to="/" replace/>
-        } />
-        <Route path="create" element={
-          user === null ?
-            <Navigate to="/" replace/>
-          :
-           <NoteForm createNote={addNote}/> 
-        } />
-      </Routes>
-
-      <ul>
-        {notes.map(
-          note => <Note key={note.id} content={note.content} deleteNote={() => handleDelete(note.id)}/>
-        )}
-      </ul>
-    </Router>
+    <Container>
+        <Router>
+          <h1>Welcome to Notes app</h1>
+          <Notification message={messageError} style="error"/>
+          <Notification message={messageSuccess} style="success" />
+          <AppBar position="static">
+            <Toolbar>
+              <Button color="inherit" component={Link} to="/">home</Button>
+              {!user && (
+                <Button color="inherit" component={Link} to="/login">login</Button>
+              )}
+              {user && (
+                <Button color="inherit" component={Link} to="/create">create</Button>
+              )}
+              {user && (
+                <Button color="inherit" onClick={handleLogout}>logout</Button>
+              )}
+            </Toolbar>
+          </AppBar>
+          <Routes>
+            <Route path="/" element={<Home />}/>
+            <Route path="/login" element={
+              user === null ? 
+                <LoginForm userLogin={userLogin}/>
+              :
+                <Navigate to="/" replace/>
+            } />
+            <Route path="create" element={
+              user === null ?
+                <Navigate to="/" replace/>
+              :
+                <NoteForm createNote={addNote}/> 
+              } />
+          </Routes>
+          <ul>
+            {notes.map(
+              note => <Note key={note.id} content={note.content} deleteNote={() => handleDelete(note.id)}/>
+            )}
+          </ul>
+        </Router>
+    </Container>
   )
 }
 
