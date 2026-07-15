@@ -2,17 +2,19 @@ import { useState, useEffect, useRef } from "react"
 import noteService from './services/notes'
 import loginService from './services/login'
 
-import { Container, AppBar, Toolbar, Button } from '@mui/material'
+import { 
+  Container, AppBar, Toolbar, Button, 
+  Table, TableBody, TableCell, TableContainer, 
+  TableHead, TableRow, Paper
+ } from '@mui/material'
 
 import {
   BrowserRouter as Router,
   Routes, Route, Navigate, Link
 } from 'react-router-dom'
 
-import Note from "./components/Note"
 import LoginForm from "./components/LoginForm"
 import NoteForm from "./components/NoteForm"
-import Togglable from "./components/Togglable"
 import Notification from "./components/Notification"
 
 import Home from "./pages/Home"
@@ -21,15 +23,7 @@ const App = () => {
   
   const [notes, setNotes] = useState([])
   const [user, setUser] = useState(null)
-  const [messageError, setMessageError] = useState(null)
-  const [messageSuccess, setMessageSuccess] = useState(null)
-
-  const noteFormRef = useRef()
-
-
-  // to load the screen with existing notes data, were going to make a Http get request with the axious library 
-  // to the localhost:3001/notes url, then update the state of notes with the data of the response returned 
-  // from that url 
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     noteService
@@ -58,16 +52,16 @@ const App = () => {
 
       noteService.setToken(user.token)
       setUser(user)
-      setMessageSuccess(`${user.name} successfully logged in`)
+      setNotification({text: `${user.name} successfully logged in`, type: 'success'})
       setTimeout(() => {
-        setMessageSuccess(null)
+        setNotification(null)
       }, 5000)
 
     } catch {
       console.log('invalid credentials')
-      setMessageError('invalid username & password')
+      setNotification({text:'invalid username & password', type: 'error'})
       setTimeout(() => {
-        setMessageError(null)
+        setNotification(null)
       }, 5000)
     }
   }
@@ -82,47 +76,26 @@ const App = () => {
       .create(noteObject)
       .then(returnedNote => {
         setNotes(notes.concat(returnedNote))
-      })
-    
-    setMessageSuccess('successfully created new note')
-    setTimeout(() => {
-      setMessageSuccess(null)
-    }, 5000)
+        setNotification({text: `Note: ${returnedNote[0].content} added!`, type: 'success'})
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+      })  
   }
 
   const handleDelete = id => {
-    console.log("id: ", id)
-    console.log("notes before delete", notes)
-    const url = `http://localhost:3001/notes/${id}`
-    const note = notes.find(n => n.id == id)
-    
-    console.log("url:", url)
-    console.log("note:", note)
-
-
     noteService
      .remove(id)
       .then(() => {
         setNotes(notes.filter(n => n.id !== id))
     })
-
-    setMessageSuccess('successfully deleted note')
-    setTimeout(() => {
-      setMessageSuccess(null)
-    }, 5000)
-    
-  }
-
-  const padding = {
-    padding: 5
   }
 
   return (
     <Container>
         <Router>
           <h1>Welcome to Notes app</h1>
-          <Notification message={messageError} style="error"/>
-          <Notification message={messageSuccess} style="success" />
+          <Notification notification={notification}/>
           <AppBar position="static">
             <Toolbar>
               <Button color="inherit" component={Link} to="/">home</Button>
@@ -153,10 +126,27 @@ const App = () => {
               } />
           </Routes>
           <ul>
-            {notes.map(
-              note => <Note key={note.id} content={note.content} deleteNote={() => handleDelete(note.id)}/>
-            )}
           </ul>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Content</TableCell>
+                  <TableCell>Delete Note</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {notes.map(note => (
+                  <TableRow key={note.id}>
+                    <TableCell>{note.content}</TableCell>
+                    <TableCell>
+                      <Button color="inherit" onClick={() => handleDelete(note.id)}>Delete</Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Router>
     </Container>
   )
