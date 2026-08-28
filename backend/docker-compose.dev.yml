@@ -1,0 +1,14 @@
+services:
+  backend-server:
+    image: full-stack-notes-backend
+    build:
+      context: .
+      dockerfile: dev.dockerfile
+    ports: 
+      - 3001:3001
+    env_file:
+      - .env
+    volumes:
+     - ./:/usr/src/app
+
+    

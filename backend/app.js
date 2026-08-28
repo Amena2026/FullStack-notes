@@ -14,7 +14,7 @@ app.use(middleware.tokenExtractor)
 app.use(middleware.userExtractor)
 
 app.get('/', (req, res) => {
-    res.send("welcome to the home page of our app ")
+    res.send("welcome to the home page of our app. testing 123 ")
 })
 
 app.get('/bird', (req, res) => {
