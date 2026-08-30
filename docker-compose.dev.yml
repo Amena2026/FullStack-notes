@@ -1,0 +1,31 @@
+services:
+  frontend:
+    image: full-stack-notes-frontend
+    build:
+      context: ./frontend
+      dockerfile: ./frontend/dev.dockerfile
+    environment:
+      - VITE_BACKEND_URL= http://localhost:8080/api/notes 
+    volumes:
+      - ./frontend:/usr/src/app
+
+
+  backend-server:
+    image: full-stack-notes-backend
+    build:
+      context: ./backend
+      dockerfile: ./backend/dev.dockerfile
+    volumes:
+      - ./backend:/usr/src/app
+    env_file:
+      - ./backend/.env
+
+  nginx:
+    image: nginx:1.29
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    depends_on:
+      - frontend
+      - backend-server

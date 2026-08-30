@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'http://localhost:3001/notes'
+const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001/notes'
 
 let token = null
 
